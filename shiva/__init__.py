@@ -1,9 +1,10 @@
 from .core import Core
 from .config import config
 import datetime
-import json
+from .commands import TelegramCommands
 
 core = Core(config)
+telegramHandler = TelegramCommands(core)
 
 def log_event(event):
     table = core.db['events']
@@ -39,20 +40,20 @@ async def tg_callback(request):
         # if message:
         #     chat = message['chat']
         #     text = message.get('text', '')
-        #     selectel.auth_by_chat_id(chat['id'])
+        #     telegram.auth_by_chat_id(chat['id'])
         #
         # if text.startswith('/auth'):
         #     cmd, user, password = text.split(' ')
         #
-        #     selectel.storage_auth(chat['id'], user, password)
+        #     telegram.storage_auth(chat['id'], user, password)
         #
         # if text.startswith('/new_container'):
         #     cmd, name = text.split(' ')
         #
-        #     selectel.create_container(name)
+        #     telegram.create_container(name)
         #
         # if text.startswith('/containers'):
-        #     containers = selectel.get_containers_list()
+        #     containers = telegram.get_containers_list()
         #
         #     response = ''
         #     for container in containers:
@@ -62,7 +63,7 @@ async def tg_callback(request):
         #
         # if text.startswith('/files'):
         #     cmd, container = text.split(' ')
-        #     files = selectel.get_files_list(container)
+        #     files = telegram.get_files_list(container)
         #
         #     response = ''
         #     for file in files:
@@ -73,11 +74,11 @@ async def tg_callback(request):
         # if text.startswith('/delete'):
         #     cmd, container, file_name = text.split(' ')
         #
-        #     selectel.delete_file(container, file_name)
+        #     telegram.delete_file(container, file_name)
         #
         # if text.startswith('/download'):
         #     cmd, container, file_name = text.split(' ')
-        #     file = selectel.download_file(container, file_name)
+        #     file = telegram.download_file(container, file_name)
         #     core.telegram.BOT.send_document(file, chat['id'])
         #
         # document = message.get('document', '')
@@ -88,7 +89,7 @@ async def tg_callback(request):
         #     if caption.startswith('/upload'):
         #         cmd, container, file_name = caption.split(' ')
         #         file = core.telegram.BOT.return_file(document['file_id'])
-        #         selectel.upload_file(container, file_name, file)
+        #         telegram.upload_file(container, file_name, file)
 
         # if message.startswith('/upload')
 
@@ -108,6 +109,6 @@ async def tg_callback(request):
 
 telegram = core.telegram
 telegram.create_webhook(config['host'])
-core.server.hooks.add(telegram.URI, tg_callback)
+core.server.hooks.add(telegram.URI, telegramHandler.telegram_callback)
 
 core.server.run()
