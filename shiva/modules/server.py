@@ -6,7 +6,7 @@ Docs: http://aiohttp.readthedocs.io/en/stable/index.html
 from aiohttp import web
 import asyncio
 
-from .Hooks import Hooks
+from .hooks import Hooks
 
 class Server:
     """

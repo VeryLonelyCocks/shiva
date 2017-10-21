@@ -1,6 +1,7 @@
-from .Server import Server
-from .Hooks import Hooks
-from .Database import Database
-from .Scheduler import Scheduler
-from .Logger import Logger, LoggerHandlers
-from .Hawk import Hawk
+from .server import Server
+from .hooks import Hooks
+from .database import Database
+from .scheduler import Scheduler
+from .logger import Logger, LoggerHandlers
+from .hawk import Hawk
+from .states import States
