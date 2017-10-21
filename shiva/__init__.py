@@ -1,5 +1,6 @@
 from .Core import Core
 from .config import config
+from aiohttp import web
 import datetime
 import json
 
@@ -44,8 +45,29 @@ async def tg_callback(request):
 
     return {'text': 'OK'}
 
+async def vk_callback(request):
+    """
+    Web App function for processing callback
+    """
+    try:
+        data = await request.json()
+        print(data)
+
+        if data['type'] == 'confirmation':
+            return {'text': '2bc41420'}
+
+        if data['type'] == 'message_new':
+            vk.send_photo(data['object']['user_id'], "E:\GitHubRep\shiva\shiva\messengers\\vk\ii5hpvRVF24.jpg")
+    except Exception as e:
+        print("Message process error: [%s]" % e)
+
+    return {'text': 'ok'}
+
 telegram = core.telegram
 telegram.createWebhook(config['host'])
 core.server.hooks.add(telegram.URI, tg_callback)
+
+vk = core.vk
+core.server.hooks.add(vk.get_web_hook(), vk_callback)
 
 core.server.run()
