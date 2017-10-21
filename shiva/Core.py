@@ -6,6 +6,8 @@ from .modules import Hawk
 
 from .messengers import Telegram
 
+from .plugins import Notifier
+
 class Core:
 
     def __init__(self, params):
@@ -37,3 +39,5 @@ class Core:
         self.scheduler = Scheduler(self)
 
         self.telegram = Telegram(self.PARAMS['telegram_token'])
+
+        self.notifier = Notifier(self.server, self.db)
