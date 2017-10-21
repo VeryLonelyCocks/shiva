@@ -10,17 +10,21 @@ class Selectel:
             'containers': self.send_container_list,
             'select_container': self.select_container,
             'upload_file': self.upload_file,
-            'download_file': self.download_file
+            'select_file': self.select_file,
+            'download_file': self.download_file,
+            'delete_file': self.delete_file,
+            'file_link': self.file_link
         }
 
     def storage_auth(self, message):
         text = message.get('text')
         chat = message.get('chat')
 
-        cmd, user, password = text.split(' ', 2)
-
-        if not user or not password:
+        try:
+            cmd, user, password = text.split(' ', 2)
+        except:
             self.telegram.send_message('Введите логин и пароль в формате /auth {login} {pass}', chat_id=chat['id'])
+            return
 
         self.sdk.storage_auth(chat['id'], user, password)
 
@@ -73,7 +77,7 @@ class Selectel:
 
                 row = [{
                     'text': name,
-                    'callback_data': '{}|{}|{}'.format('download_file', container, name)
+                    'callback_data': '{}|{}|{}'.format('select_file', container, name)
                 }]
                 buttons.append(row)
 
@@ -99,6 +103,27 @@ class Selectel:
 
         self.telegram.send_message(message, chat['id'])
 
+    def select_file(self, callback_query):
+        data = callback_query.get('data')
+        chat = callback_query['message']['chat']
+
+        cmd, container, file = data.split('|', 2)
+
+        buttons = [[{
+            'text': 'Скачать',
+            'callback_data': 'download_file|{}|{}'.format(container, file)
+        }],
+        [{
+            'text': 'Ссылка',
+            'callback_data': 'file_link|{}|{}'.format(container, file)
+        }],
+        [{
+            'text': 'Удалить',
+            'callback_data': 'delete_file|{}|{}'.format(container, file)
+        }]]
+
+        self.telegram.send_message(file, chat_id=chat['id'], reply_markup={'inline_keyboard': buttons})
+
     def download_file(self, callback_query):
         data = callback_query.get('data')
         chat = callback_query['message']['chat']
@@ -108,6 +133,28 @@ class Selectel:
         content = self.sdk.download_file(container, file)
 
         self.telegram.send_document(content, chat['id'])
+
+    def delete_file(self, callback_query):
+        data = callback_query.get('data')
+        chat = callback_query['message']['chat']
+
+        cmd, container, file = data.split('|', 2)
+
+        self.sdk.delete_file(container, file)
+        self.telegram.send_message('Файл удален', chat_id=chat['id'])
+
+    def file_link(self, callback_query):
+        data = callback_query.get('data')
+        chat = callback_query['message']['chat']
+
+        cmd, container, file = data.split('|', 2)
+
+        link = self.sdk.get_file_link(chat['id'], container, file)
+
+        if link:
+            self.telegram.send_message(link, chat_id=chat['id'])
+        else:
+            self.telegram.send_message('К сожалению, у вас нет доступа к созданию ссылок для данного хранилища', chat_id=chat['id'])
 
     def auth(self, chat_id):
         if not self.sdk.authorized:
