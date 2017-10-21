@@ -32,52 +32,17 @@ async def tg_callback(request):
         message = event.get("message", "")
         if message:
             chat = return_chat(message['chat'])
-            # response = process_message(message, chat)
-            response = "halo"
+            print(chat)
+            response = "hello!"
             telegram.BOT.sendMessage(
                 text=response,
-                chat_id=chat
+                chat_id=chat['id']
             )
-
-            # start(message['chat']['id'])
-            stop(message['chat']['id'])
 
     except Exception as e:
         core.logger.error(e, exc_info=e)
 
     return {'text': 'OK'}
-
-def getJobId(label, chat_id):
-    job_id = "{}:{}".format(chat_id, label)
-    return job_id
-
-def test_notify(chat_id):
-    message = 'privet'
-    telegram.BOT.sendMessage(
-        text=message,
-        chat_id=chat_id
-    )
-
-def start(chat_id):
-    core.scheduler.addJob(
-        label='test_notify',
-        func_args=[chat_id],
-        trigger='cron',
-        trigger_params={'second': '*/5'},
-        job_id=getJobId('test_notify', chat_id)
-    )
-    return '🔔 Ежедневные уведомления включены.'
-
-def stop(chat_id):
-    core.scheduler.removeJob(getJobId('test_notify', chat_id))
-    return '🔕 Ежедневные уведомления выключены.'
-
-
-
-core.scheduler.setFunctions({
-    'test_notify': test_notify
-})
-core.scheduler.restoreJobs()
 
 telegram = core.telegram
 telegram.createWebhook(config['host'])

@@ -7,7 +7,40 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 
 class Scheduler:
+    """
+    Nice class for sheduled jobs
 
+    Example usage
+
+    1. Set functions
+    >>> core.scheduler.setFunctions({
+    ...    'test_notify_function': test_notify_function
+    ... })
+
+    2. Restore jobs from db
+    >>> core.scheduler.restoreJobs()
+
+    Need to have defined key generate function
+    >>> def getJobId(label, chat_id):
+    ...     job_id = "{}:{}".format(chat_id, label)
+    ...     return job_id
+
+    Then you can do what you want.
+
+    3. Create new job
+    >>> core.scheduler.addJob(
+    ...     label='test_notify_function',
+    ...     func_args=[chat_id],
+    ...     trigger='cron',
+    ...     trigger_params={'second': '*/5'},
+    ...     job_id=getJobId('test_notify', chat_id)
+    ... )
+
+    4. Remove existing job
+    >>> core.scheduler.removeJob(getJobId('test_notify_function', chat_id))
+
+    """
+    
     scheduler = None
 
     COLLECTION_JOBS = 'app_jobs'
@@ -23,6 +56,10 @@ class Scheduler:
     def setFunctions(self, functions={}):
         """
         Dictionary "label" -> "function"
+
+        >>> core.scheduler.setFunctions({
+        ...    'test_notify_function': test_notify_function
+        ... })
 
         :param functions dict:
             'print': print
@@ -75,7 +112,9 @@ class Scheduler:
 
     def removeJob(self, job_id):
         """
-        core.scheduler.removeJob(getJobId('message', chat_id))
+        Remove running job
+
+        >>> core.scheduler.removeJob(getJobId('message', chat_id))
         """
         try:
             if self.scheduler.get_job(job_id):
@@ -85,6 +124,11 @@ class Scheduler:
             self.core.logger.error(e, exc_info=e)
 
     def restoreJobs(self):
+        """
+        Restore jobs from db
+
+        >>> core.scheduler.restoreJobs()
+        """
         try:
             # get jobs from db
             jobs = self.table.find()
@@ -92,11 +136,16 @@ class Scheduler:
             # run jobs
             for job in jobs:
                 self.runJob(job)
+
         except Exception as e:
             self.core.logger.error(e, exc_info=e)
 
 """
-core.scheduler.add_job(taly.BOT.sendMessage, 'interval', seconds=5, args=['text'])
+# Scheduler triggers
+
+date: use when you want to run the job just once at a certain point of time
+interval: use when you want to run the job at fixed intervals of time
+cron: use when you want to run the job periodically at certain time(s) of day
 
 ## Add job
 
@@ -123,8 +172,4 @@ http://apscheduler.readthedocs.io/en/latest/modules/triggers/date.html
 > sched.add_job(my_job, 'date', run_date='2009-11-06 16:30:05', args=['text'])
 > sched.add_job(my_job, 'date', run_date=datetime(2009, 11, 6, 16, 30, 5), args=['text'])
 tick — function to run
-
-date: use when you want to run the job just once at a certain point of time
-interval: use when you want to run the job at fixed intervals of time
-cron: use when you want to run the job periodically at certain time(s) of day
 """
