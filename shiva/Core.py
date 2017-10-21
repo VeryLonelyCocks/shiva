@@ -5,6 +5,7 @@ from .modules import Logger, LoggerHandlers
 from .modules import Hawk
 
 from .messengers import Telegram
+from .messengers import VKBot
 
 class Core:
 
@@ -37,3 +38,5 @@ class Core:
         self.scheduler = Scheduler(self)
 
         self.telegram = Telegram(self.PARAMS['telegram_token'])
+
+        self.vk = VKBot()

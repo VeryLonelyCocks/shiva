@@ -1,11 +1,10 @@
 import requests
-from messenger.vk.config import access_token
 
 
 class VKRequest:
 
     @staticmethod
-    def get_request_url(method, **kwargs):
+    def get_request_url(method, token, **kwargs):
         attacments = ''
 
         for arg in kwargs:
@@ -13,7 +12,7 @@ class VKRequest:
 
         attacments = attacments[0:-1]
         url = """https://api.vk.com/method/{method}?{attacments}&access_token={access_token}&v=5.53\
-        """.replace(" ", "").format(method=method, attacments=attacments, access_token=access_token)
+        """.replace(" ", "").format(method=method, attacments=attacments, access_token=token)
 
         return url
 
@@ -33,8 +32,8 @@ class VKRequest:
         return q.json()
 
     @staticmethod
-    def _api_upload_server_response(user_id):
-        url = VKRequest.get_request_url('photos.getMessagesUploadServer', peer_id=user_id)
+    def _api_upload_server_response(user_id, token):
+        url = VKRequest.get_request_url('photos.getMessagesUploadServer', token=token, peer_id=user_id)
 
         q = VKRequest.get_request(url)
 
@@ -49,18 +48,22 @@ class VKRequest:
         return q
 
     @staticmethod
-    def _api_save_photo(server, photo, hash):
-        url = VKRequest.get_request_url('photos.saveMessagesPhoto', server=server, photo=photo, hash=hash)
+    def _api_save_photo(server, photo, hash, token):
+        url = VKRequest.get_request_url('photos.saveMessagesPhoto', token=token, server=server, photo=photo, hash=hash)
 
         q = VKRequest.get_request(url)
 
+        return q
+
     @staticmethod
-    def get_upload_photos(user_id, file_name):
-        server_response = VKRequest._api_upload_server_response(user_id)
+    def get_upload_photos(user_id, file_name, token):
+        server_response = VKRequest._api_upload_server_response(user_id, token)
         upload_response = VKRequest._api_upload_photo(server_response, file_name)
 
         photo = upload_response['photo']
         server = upload_response['server']
         hash = upload_response['hash']
 
-        photo = VKRequest._api_save_photo(server, photo, hash)['response'][-1]
+        photo = VKRequest._api_save_photo(server, photo, hash, token)['response'][-1]
+
+        return photo
