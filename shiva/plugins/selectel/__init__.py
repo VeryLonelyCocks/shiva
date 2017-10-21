@@ -1,1 +1,1 @@
-from .selectel import SelectelCloudStorage
+from .selectelcloudstorage import SelectelCloudStorage
