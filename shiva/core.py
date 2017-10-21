@@ -9,12 +9,19 @@ from .messengers import Telegram
 from .plugins import SelectelCloudStorage
 
 class Core:
+    """
+    Core module will prepare your app
+    - get config
+    - prepare modules
+    - prepare messengers
+    - prepare plugins
+    """
 
     def __init__(self, params):
         """
         Initiate Core with startup params.
 
-        :param params dict: configs
+        :param params dict: config
         """
 
         self.PARAMS = params
