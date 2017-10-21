@@ -34,13 +34,13 @@ async def tg_callback(request):
         selectel = core.selectel
 
         message = event.get("message", "")
-        # chat = {}
-        # text = ''
-        #
-        # if message:
-        #     chat = message['chat']
-        #     text = message.get('text', '')
-        #     telegram.auth_by_chat_id(chat['id'])
+        chat = {}
+        text = ''
+
+        if message:
+            chat = message['chat']
+            text = message.get('text', '')
+        #     selectel.auth_by_chat_id(chat['id'])
         #
         # if text.startswith('/auth'):
         #     cmd, user, password = text.split(' ')
@@ -93,19 +93,25 @@ async def tg_callback(request):
 
         # if message.startswith('/upload')
 
-        if message:
-            chat = return_chat(message['chat'])
-            print(chat)
-            response = "hello!"
-            telegram.BOT.send_message(
-                text=response,
-                chat_id=chat['id']
-            )
+        if text.startswith('/notifier'):
+            # core.telegram.BOT.send_document(file, chat['id'])
+            return core.notifier.process_start(chat['id'], 'telegram')
+
+        # process_start
+
+        # if message:
+        #     chat = return_chat(message['chat'])
+        #     print(chat)
+        #     response = "hello!"
+        #     telegram.BOT.send_message(
+        #         text=response,
+        #         chat_id=chat['id']
+        #     )
 
     except Exception as e:
         core.logger.error(e, exc_info=e)
 
-    return {'text': 'OK'}
+    return {'text': 'ok'}
 
 telegram = core.telegram
 telegram.create_webhook(config['host'])

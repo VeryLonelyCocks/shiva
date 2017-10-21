@@ -8,6 +8,7 @@ from .modules import States
 from .messengers import Telegram
 
 from .plugins import SelectelCloudStorage
+from .plugins import Notifier
 
 class Core:
     """
@@ -48,7 +49,6 @@ class Core:
 
         self.server = Server(self.PARAMS['port'])
         self.scheduler = Scheduler(self)
-
         self.states = States(self)
 
     def load_messengers(self):
@@ -56,3 +56,4 @@ class Core:
 
     def load_plugins(self):
         self.selectel = SelectelCloudStorage(self.db)
+        self.notifier = Notifier(self)
