@@ -54,8 +54,6 @@ class VKRequest:
 
         q = VKRequest.get_request(url)
 
-        return q
-
     @staticmethod
     def get_upload_photos(user_id, file_name):
         server_response = VKRequest._api_upload_server_response(user_id)
@@ -66,5 +64,3 @@ class VKRequest:
         hash = upload_response['hash']
 
         photo = VKRequest._api_save_photo(server, photo, hash)['response'][-1]
-
-        return photo
