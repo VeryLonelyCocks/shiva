@@ -32,7 +32,6 @@ class Core:
         self.load_messengers()
         self.load_plugins()
 
-
     def load_modules(self):
 
         self.logger = Logger(self).logger
@@ -50,7 +49,6 @@ class Core:
 
         self.server = Server(self.PARAMS['port'])
         self.scheduler = Scheduler(self)
-        
         self.states = States(self)
 
     def load_messengers(self):
