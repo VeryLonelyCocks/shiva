@@ -1,17 +1,26 @@
 from .telegram import Selectel
-
+from .telegram import Notifier
+from .telegram import Main
 
 class TelegramCommands:
 
     def __init__(self, core):
         self.core = core
         self.commands = {}
-        self.load_pluigns()
 
-    def load_pluigns(self):
+        self.load_plugins()
+
+    def load_plugins(self):
         self.selectel = Selectel(self.core)
-
         for command,callback in self.selectel.commands.items():
+            self.commands[command] = callback
+
+        self.notifier = Notifier(self.core)
+        for command,callback in self.notifier.commands.items():
+            self.commands[command] = callback
+
+        self.main = Main(self.core)
+        for command,callback in self.main.commands.items():
             self.commands[command] = callback
 
     async def telegram_callback(self, request):
@@ -32,6 +41,11 @@ class TelegramCommands:
                 if command in self.selectel.commands:
                     self.selectel.process_command(command, message)
 
+                if command in self.notifier.commands:
+                    self.commands[command](message)
+
+                if command in self.main.commands:
+                    self.commands[command](message)
 
         if callback_query:
             data = callback_query.get('data')
