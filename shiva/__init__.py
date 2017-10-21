@@ -57,7 +57,7 @@ async def tg_callback(request):
             for container in containers:
                 response += container['name'] + '\n'
 
-            core.telegram.BOT.sendMessage(text=response, chat_id=chat['id'])
+            core.telegram.BOT.send_message(text=response, chat_id=chat['id'])
 
         if text.startswith('/files'):
             cmd, container = text.split(' ')
@@ -67,7 +67,7 @@ async def tg_callback(request):
             for file in files:
                 response += file['name'] + '\n'
 
-            core.telegram.BOT.sendMessage(text=response, chat_id=chat['id'])
+            core.telegram.BOT.send_message(text=response, chat_id=chat['id'])
 
         if text.startswith('/delete'):
             cmd, container, file_name = text.split(' ')
@@ -77,7 +77,7 @@ async def tg_callback(request):
         if text.startswith('/download'):
             cmd, container, file_name = text.split(' ')
             file = selectel.download_file(container, file_name)
-            core.telegram.BOT.sendDocument(file, chat['id'])
+            core.telegram.BOT.send_document(file, chat['id'])
 
         document = message.get('document', '')
 
@@ -86,7 +86,7 @@ async def tg_callback(request):
 
             if caption.startswith('/upload'):
                 cmd, container, file_name = caption.split(' ')
-                file = core.telegram.BOT.returnFile(document['file_id'])
+                file = core.telegram.BOT.return_file(document['file_id'])
                 selectel.upload_file(container, file_name, file)
 
         # if message.startswith('/upload')
@@ -95,7 +95,7 @@ async def tg_callback(request):
         #     chat = return_chat(message['chat'])
         #     print(chat)
         #     response = "hello!"
-        #     telegram.BOT.sendMessage(
+        #     telegram.BOT.send_message(
         #         text=response,
         #         chat_id=chat['id']
         #     )
@@ -106,7 +106,7 @@ async def tg_callback(request):
     return {'text': 'OK'}
 
 telegram = core.telegram
-telegram.createWebhook(config['host'])
+telegram.create_webhook(config['host'])
 core.server.hooks.add(telegram.URI, tg_callback)
 
 core.server.run()

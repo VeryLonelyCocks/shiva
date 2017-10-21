@@ -2,7 +2,7 @@ from aiohttp import web
 import asyncio
 import requests
 from messenger.vk.config import *
-from messenger.vk.SendMessage import *
+from messenger.vk.send_message import *
 
 PORT = 3000
 

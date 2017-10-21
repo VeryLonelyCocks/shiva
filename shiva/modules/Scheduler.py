@@ -13,12 +13,12 @@ class Scheduler:
     Example usage
 
     1. Set functions
-    >>> core.scheduler.setFunctions({
+    >>> core.scheduler.set_functions({
     ...    'test_notify_function': test_notify_function
     ... })
 
     2. Restore jobs from db
-    >>> core.scheduler.restoreJobs()
+    >>> core.scheduler.restore_jobs()
 
     Need to have defined key generate function
     >>> def getJobId(label, chat_id):
@@ -28,7 +28,7 @@ class Scheduler:
     Then you can do what you want.
 
     3. Create new job
-    >>> core.scheduler.addJob(
+    >>> core.scheduler.add_job(
     ...     label='test_notify_function',
     ...     func_args=[chat_id],
     ...     trigger='cron',
@@ -37,10 +37,10 @@ class Scheduler:
     ... )
 
     4. Remove existing job
-    >>> core.scheduler.removeJob(getJobId('test_notify_function', chat_id))
+    >>> core.scheduler.remove_job(getJobId('test_notify_function', chat_id))
 
     """
-    
+
     scheduler = None
 
     COLLECTION_JOBS = 'app_jobs'
@@ -53,11 +53,11 @@ class Scheduler:
         self.scheduler.start()
         self.table = self.core.db[self.COLLECTION_JOBS]
 
-    def setFunctions(self, functions={}):
+    def set_functions(self, functions={}):
         """
         Dictionary "label" -> "function"
 
-        >>> core.scheduler.setFunctions({
+        >>> core.scheduler.set_functions({
         ...    'test_notify_function': test_notify_function
         ... })
 
@@ -68,7 +68,7 @@ class Scheduler:
         for label in functions:
             self.functions[label] = functions[label]
 
-    def runJob(self, params):
+    def run_job(self, params):
         label = params['label']
         job_function = self.functions[label]
         trigger = params['trigger']
@@ -79,9 +79,9 @@ class Scheduler:
         return self.scheduler.add_job(job_function, trigger, **trigger_params, args=func_args, id=job_id)
 
 
-    def addJob(self, label, func_args=[], trigger='', trigger_params=[], job_id=''):
+    def add_job(self, label, func_args=[], trigger='', trigger_params=[], job_id=''):
         """
-        core.scheduler.addJob(
+        core.scheduler.add_job(
             label='message',
             func_args=['blet'],
             trigger='cron',
@@ -100,21 +100,21 @@ class Scheduler:
 
 
             if self.scheduler.get_job(job_id):
-                self.removeJob(job_id)
+                self.remove_job(job_id)
 
             # run job
-            self.runJob(job_params)
+            self.run_job(job_params)
 
             # save job to db
             self.table.insert_one(job_params)
         except Exception as e:
             self.core.logger.error(e, exc_info=e)
 
-    def removeJob(self, job_id):
+    def remove_job(self, job_id):
         """
         Remove running job
 
-        >>> core.scheduler.removeJob(getJobId('message', chat_id))
+        >>> core.scheduler.remove_job(getJobId('message', chat_id))
         """
         try:
             if self.scheduler.get_job(job_id):
@@ -123,11 +123,11 @@ class Scheduler:
         except Exception as e:
             self.core.logger.error(e, exc_info=e)
 
-    def restoreJobs(self):
+    def restore_jobs(self):
         """
         Restore jobs from db
 
-        >>> core.scheduler.restoreJobs()
+        >>> core.scheduler.restore_jobs()
         """
         try:
             # get jobs from db
@@ -135,7 +135,7 @@ class Scheduler:
 
             # run jobs
             for job in jobs:
-                self.runJob(job)
+                self.run_job(job)
 
         except Exception as e:
             self.core.logger.error(e, exc_info=e)
