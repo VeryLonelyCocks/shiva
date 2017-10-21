@@ -12,7 +12,10 @@ class Telegram():
 
     def create_webhook(self, host):
         self.HOST = host
-        self.URI = '/%s' % uuid.uuid4().hex
+
+        # self.URI = '/%s' % uuid.uuid4().hex
+        self.URI = '/telegram'
+
         self.WEBHOOK = 'https://{}{}'.format(self.HOST, self.URI)
         return self.BOT.set_webhook(self.WEBHOOK)
 

@@ -42,6 +42,8 @@ class Notifier:
             return {'text': 'Send POST request with "message" param', 'status': '500'}
 
     def process_start(self, chat_id, service):
+        message = ''
+
         try:
             chat = self.table.find_one({'id': chat_id, 'service': service})
             if not chat:
@@ -51,19 +53,27 @@ class Notifier:
 
             message = "Вы можете присылать уведомления в чат от имени бота, оправив POST-запрос по адресу {} с текстом сообщения в параметре message.".format(link)
 
-            if service == 'telegram':
-                send_message = self.core.telegram.BOT.send_message
-            # ...
-
-            send_message(
-                text=message,
-                chat_id=chat_id
-            )
-
         except Exception as e:
             self.core.logger.error(e, exc_info=e)
 
-        return {'text': 'ok'}
+        return message
+
+    # def process_hello(self, chat_id, service):
+    #     try:
+    #
+    #         if service == 'telegram':
+    #             send_message = self.core.telegram.BOT.send_message
+    #         # ...
+    #
+    #         send_message(
+    #             text=message,
+    #             chat_id=chat_id
+    #         )
+    #
+    #     except Exception as e:
+    #         self.core.logger.error(e, exc_info=e)
+    #
+    #     return {'text': 'ok'}
 
     def save_chat_to_db(self, chat_id, service):
         key = self.generate_key()
