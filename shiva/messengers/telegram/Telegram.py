@@ -1,3 +1,4 @@
+from .config import config
 import requests
 import json
 import uuid
@@ -5,8 +6,8 @@ import uuid
 
 class Telegram():
 
-    def __init__(self, token):
-        self.TOKEN = token
+    def __init__(self):
+        self.TOKEN = config['token']
         self.BOT = API(self.TOKEN)
 
     def create_webhook(self, host):
@@ -38,7 +39,7 @@ class API:
 
 
     def get_updates(self, data={'limit': 100}):
-        return self.telegram_action('get_updates', data=data)
+        return self.telegram_action('getUpdates', data=data)
 
     def send_message(self,
                     text,
@@ -63,7 +64,7 @@ class API:
             chat_id=data['chat_id']
         )
 
-        return self.telegram_action('send_message', data=data)
+        return self.telegram_action('sendMessage', data=data)
 
     def forward_message(self,
                        chat_id,
@@ -82,7 +83,7 @@ class API:
             chat_id=data['chat_id']
         )
 
-        return self.telegram_action('forward_message', data=data)
+        return self.telegram_action('forwardMessage', data=data)
 
     def send_voice(self,
                   voice,
@@ -113,7 +114,7 @@ class API:
             chat_id=data['chat_id']
         )
 
-        return self.telegram_action('send_voice', data=data, files=files)
+        return self.telegram_action('sendVoice', data=data, files=files)
 
     """
     Type of action to broadcast.
@@ -131,13 +132,13 @@ class API:
             'action': action,
             'chat_id': chat_id
         }
-        return self.telegram_action('send_chat_action', data=data)
+        return self.telegram_action('sendChatAction', data=data)
 
     def get_file(self, file_id=''):
         data = {
             'file_id': file_id
         }
-        return self.telegram_action('get_file', data=data)
+        return self.telegram_action('getFile', data=data)
 
     def return_file(self, file_id):
         request_file = self.get_file(file_id=file_id)
@@ -172,7 +173,7 @@ class API:
             chat_id=data['chat_id']
         )
 
-        return self.telegram_action('send_photo', data=data, files=files)
+        return self.telegram_action('sendPhoto', data=data, files=files)
 
     def send_document(self,
                      document,
@@ -202,7 +203,7 @@ class API:
             chat_id=data['chat_id']
         )
 
-        return self.telegram_action('send_document', data=data, files=files)
+        return self.telegram_action('sendDocument', data=data, files=files)
 
 
     def set_webhook(self, url):
@@ -212,7 +213,7 @@ class API:
             'max_connections': 40,
             'allowed_updates': []
         }
-        return self.telegram_action('set_webhook', data=data)
+        return self.telegram_action('setWebhook', data=data)
 
     def delete_webhook(self):
-        return self.telegram_action('delete_webhook')
+        return self.telegram_action('deleteWebhook')

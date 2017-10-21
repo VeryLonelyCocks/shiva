@@ -38,6 +38,6 @@ class Core:
 
         self.scheduler = Scheduler(self)
 
-        self.telegram = Telegram(self.PARAMS['telegram_token'])
+        self.telegram = Telegram()
 
         self.selectel = SelectelCloudStorage(self.db)
