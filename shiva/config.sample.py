@@ -1,8 +1,14 @@
 config = {
-    'host': 'yourhost.ru',
-    'core': {
-        'port': 3000,
-        'name': '',
-        'hawk': ''
-    }
+
+    # Host name without protocol
+    'host': 'shiva.selectel.ru',
+
+    # Server will run on this port
+    'port': 3000,
+
+    # Set project name
+    'name': 'shiva',
+
+    # Hawk Catcher token
+    'hawk': ''
 }

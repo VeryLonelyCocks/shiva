@@ -14,30 +14,37 @@ class Core:
         """
         Initiate Core with startup params.
 
-        :param port integer: Port for web server
-        :param name string: Bot's identifier for DB
-        :param hawk string: Hawk project token
+        :param params dict: configs
         """
 
-        # TODO check params
         self.PARAMS = params
+
+        self.load_modules()
+        self.load_messengers()
+        self.load_plugins()
+
+
+    def load_modules(self):
 
         self.logger = Logger(self).logger
 
         self.db = Database().get(self.PARAMS['name'])
 
-        # TODO remove
+        """
+        Enable loggers
+        """
+        # LoggerHandlers.add(self, self.logger, ['journal'])
+        # LoggerHandlers.add(self, self.logger, ['db'])
         if self.PARAMS.get('hawk'):
             self.hawk = Hawk(self.PARAMS['hawk']).hawk
             LoggerHandlers.add(self, self.logger, ['hawk'])
 
-        # LoggerHandlers.add(self, self.logger, ['journal'])
-        # LoggerHandlers.add(self, self.logger, ['db'])
-
         self.server = Server(self.PARAMS['port'])
-
         self.scheduler = Scheduler(self)
 
+
+    def load_messengers(self):
         self.telegram = Telegram()
 
+    def load_plugins(self):
         self.selectel = SelectelCloudStorage(self.db)

@@ -3,7 +3,7 @@ from .config import config
 import datetime
 import json
 
-core = Core(config['core'])
+core = Core(config)
 
 def log_event(event):
     table = core.db['events']
@@ -19,6 +19,7 @@ def return_chat(chat_data):
     chat = table.find_one({'id': chat_data['id']})
     if not chat:
         chat = table.insert_one(chat_data)
+        chat = table.find_one({'id': chat_data['id']})
     return chat
 
 async def tg_callback(request):
