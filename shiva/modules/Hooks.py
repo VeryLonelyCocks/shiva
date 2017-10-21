@@ -3,7 +3,7 @@ class Hooks:
     Hooks class for Server
 
     Register hook
-    >>> core.server.hooks.add('/mycallbackurl', callbackfunction)
+    >>> core.server.hooks.add('/mycallbackurl', callbackfunction, {'param1': param1})
 
     Get hook
     >>> core.server.hooks.get('/mycallbackurl')

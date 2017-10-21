@@ -34,7 +34,7 @@ class Server:
     async def callback(self, request):
         """
         Process action on callback
-        
+
         :param request:
         """
 
