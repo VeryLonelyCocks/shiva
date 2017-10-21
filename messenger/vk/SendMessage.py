@@ -1,23 +1,22 @@
-import requests
-
-from messenger.vk.VKAPIRequest import vk_requests_url, vk_upload_photos
+from messenger.vk.VKAPIRequest import VKRequest
 
 
-def vk_send_text(user_id, text):
-    url = vk_requests_url('messages.send', message=text, user_id=user_id)
+class VKBot:
+    def __init__(self, user_id):
+        self.user_id = user_id
 
-    requests.get(url)
+    def send_text(self, text):
+        url = VKRequest.get_request_url(method='messages.send', message=text, user_id=self.user_id)
+        VKRequest.get_request(url)
 
-    return 'ok'
+        return 'ok'
 
+    def send_photo(self, file_name, message=''):
+        photo = VKRequest.get_upload_photos(user_id=self.user_id, file_name=file_name)
+        attachment = 'photo{owner_id}_{picture_id}'.format(owner_id=photo['owner_id'], picture_id=photo['id'])
 
-def vk_send_photo(user_id, file_name, message=''):
-    photo = vk_upload_photos(user_id, file_name)
+        url = VKRequest.get_request_url('messages.send', user_id=self.user_id, message=message, attachment=attachment)
 
-    attachment = 'photo{owner_id}_{picture_id}'.format(owner_id=photo['owner_id'], picture_id=photo['id'])
+        VKRequest.get_request(url)
 
-    url = vk_requests_url('messages.send', user_id=user_id, message=message, attachment=attachment)
-
-    requests.get(url)
-
-    return 'ok'
+        return 'ok'
