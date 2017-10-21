@@ -175,7 +175,35 @@ class API:
 
         return self.telegramAction('sendPhoto', data=data, files=files)
 
+    def sendDocument(self,
+                     document,
+                     chat_id,
+                     caption='',
+                     disable_notification=False,
+                     reply_to_message_id=0,
+                     reply_markup={}):
+        data = {
+            'chat_id': chat_id,
+            'document': document,
+            'caption': caption,
+            'disable_notification': disable_notification,
+            'reply_to_message_id': reply_to_message_id,
+            'reply_markup': reply_markup
+        }
 
+        files = {}
+
+        if type(document) == type(''):
+            data['document'] = document
+        else:
+            files['document'] = document
+
+        self.sendChatAction(
+            action='upload_document',
+            chat_id=data['chat_id']
+            )
+
+        return self.telegramAction('sendDocument', data=data, files=files)
 
 
     def setWebhook(self, url):

@@ -1,0 +1,3 @@
+[submodule "shiva/plugins/selectel/sdk"]
+	path = shiva/plugins/selectel/sdk
+	url = git@github.com:VeryLonelyCocks/selectel-python-sdk.git

@@ -1,4 +1,4 @@
-from .Core import Core
+from .core import Core
 from .config import config
 import datetime
 import json
@@ -23,21 +23,82 @@ def return_chat(chat_data):
 
 async def tg_callback(request):
     try:
-        ## get event and log it #
+        ## get event and logs it #
         event = await request.json()
         log_event(event)
         core.logger.info('Got a new event: %s' % event)
         ###
 
+        selectel = core.selectel
+
         message = event.get("message", "")
+        chat = {}
+        text = ''
+
         if message:
-            chat = return_chat(message['chat'])
-            print(chat)
-            response = "hello!"
-            telegram.BOT.sendMessage(
-                text=response,
-                chat_id=chat['id']
-            )
+            chat = message['chat']
+            text = message.get('text', '')
+            selectel.auth_by_chat_id(chat['id'])
+
+        if text.startswith('/auth'):
+            cmd, user, password = text.split(' ')
+
+            selectel.storage_auth(chat['id'], user, password)
+
+        if text.startswith('/new_container'):
+            cmd, name = text.split(' ')
+
+            selectel.create_container(name)
+
+        if text.startswith('/containers'):
+            containers = selectel.get_containers_list()
+
+            response = ''
+            for container in containers:
+                response += container['name'] + '\n'
+
+            core.telegram.BOT.sendMessage(text=response, chat_id=chat['id'])
+
+        if text.startswith('/files'):
+            cmd, container = text.split(' ')
+            files = selectel.get_files_list(container)
+
+            response = ''
+            for file in files:
+                response += file['name'] + '\n'
+
+            core.telegram.BOT.sendMessage(text=response, chat_id=chat['id'])
+
+        if text.startswith('/delete'):
+            cmd, container, file_name = text.split(' ')
+
+            selectel.delete_file(container, file_name)
+
+        if text.startswith('/download'):
+            cmd, container, file_name = text.split(' ')
+            file = selectel.download_file(container, file_name)
+            core.telegram.BOT.sendDocument(file, chat['id'])
+
+        document = message.get('document', '')
+
+        if document:
+            caption = message.get('caption', '')
+
+            if caption.startswith('/upload'):
+                cmd, container, file_name = caption.split(' ')
+                file = core.telegram.BOT.returnFile(document['file_id'])
+                selectel.upload_file(container, file_name, file)
+
+        # if message.startswith('/upload')
+
+        # if message:
+        #     chat = return_chat(message['chat'])
+        #     print(chat)
+        #     response = "hello!"
+        #     telegram.BOT.sendMessage(
+        #         text=response,
+        #         chat_id=chat['id']
+        #     )
 
     except Exception as e:
         core.logger.error(e, exc_info=e)

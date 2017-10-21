@@ -6,6 +6,8 @@ from .modules import Hawk
 
 from .messengers import Telegram
 
+from .plugins import SelectelCloudStorage
+
 class Core:
 
     def __init__(self, params):
@@ -29,7 +31,7 @@ class Core:
             self.hawk = Hawk(self.PARAMS['hawk']).hawk
             LoggerHandlers.add(self, self.logger, ['hawk'])
 
-        LoggerHandlers.add(self, self.logger, ['journal'])
+        # LoggerHandlers.add(self, self.logger, ['journal'])
         # LoggerHandlers.add(self, self.logger, ['db'])
 
         self.server = Server(self.PARAMS['port'])
@@ -37,3 +39,5 @@ class Core:
         self.scheduler = Scheduler(self)
 
         self.telegram = Telegram(self.PARAMS['telegram_token'])
+
+        self.selectel = SelectelCloudStorage(self.db)
