@@ -21,5 +21,3 @@ class Notifier:
             )
 
         return {'text': 'ok'}
-
-        return {'text': 'ok'}
