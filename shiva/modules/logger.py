@@ -2,7 +2,7 @@
 https://docs.python.org/3/library/logging.html
 """
 import logging
-from .Hawk import Hawk
+from .hawk import Hawk
 
 
 class Logger:

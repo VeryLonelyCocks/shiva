@@ -3,6 +3,7 @@ from .modules import Database
 from .modules import Scheduler
 from .modules import Logger, LoggerHandlers
 from .modules import Hawk
+from .modules import States
 
 from .messengers import Telegram
 
@@ -49,6 +50,8 @@ class Core:
 
         self.server = Server(self.PARAMS['port'])
         self.scheduler = Scheduler(self)
+        
+        self.states = States(self)
 
     def load_messengers(self):
         self.telegram = Telegram()
