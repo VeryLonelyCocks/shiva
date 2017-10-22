@@ -121,7 +121,7 @@ class Selectel:
 
         buffer = self.sdk.download_file(container, file)
 
-        response = self.telegram.send_document(buffer.getvalue(), chat['id'])
+        response = self.telegram.send_document(buffer, chat['id'])
 
         if hasattr(response, 'states_code') and response.status_code == 413:
             self.telegram.send_message('Файл слишком большой, воспользуйтесь ссылкой', chat_id=chat['id'])
