@@ -3,13 +3,14 @@ import string
 
 from .sdk.sdk.cloudstorage import CloudStorage
 
+
 class SelectelCloudStorage:
 
     def __init__(self, db):
         self.db = db
         self.authorized = False
         self.link_key = None
-
+        self.sdk = None
 
     def storage_auth(self, chat_id, user=None, password=None):
 
@@ -23,15 +24,20 @@ class SelectelCloudStorage:
             self.authorized = True
             return
 
+        if user is None and password is None:
+            return
+
         self.sdk = CloudStorage(user, password)
         self.authorized = True
 
-        table.insert_one({
+        table.update_one({
+            'chat_id': chat_id
+        },{'$set': {
             'user': user,
-            'chat_id': chat_id,
             'token': self.sdk.auth_token,
             'storage_url': self.sdk.storage_url
-        })
+        }},
+        upsert=True)
 
     def create_container(self, name, type='private'):
 
@@ -39,6 +45,12 @@ class SelectelCloudStorage:
             return False
 
         self.sdk.new_container(name, type)
+
+    def delete_container(self, name):
+        if not self.authorized:
+            return False
+
+        return self.sdk.delete_container(name)
 
     def get_containers_list(self):
 

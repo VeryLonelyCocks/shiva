@@ -38,7 +38,7 @@ class API:
         try:
             return json.loads(response)
         except:
-            return response
+            return result
 
     def telegram_return_file(self, file_id):
 
