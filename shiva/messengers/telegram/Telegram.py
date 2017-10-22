@@ -34,7 +34,7 @@ class API:
             data['reply_markup'] = json.dumps(data['reply_markup'])
 
         result = requests.post(botURL, data=data, files=files)
-        print(result.request.headers)
+
         response = result.content.decode("utf-8")
         try:
             return json.loads(response)

@@ -19,7 +19,8 @@ class Selectel:
             'file_link': self.file_link,
             'files': self.get_files,
             'new_container': self.create_container,
-            'del_container': self.del_container
+            'del_container': self.del_container,
+            'cloudstorage': self.send_container_list
         }
 
     def storage_auth(self, message):
@@ -84,7 +85,7 @@ class Selectel:
 
         code = self.sdk.upload_file(container, name, file, document.get('mime_type'), document.get('file_size'))
 
-        if code == 201:
+        if 199 < code < 300:
             message = 'Файл успешно загружен'
         else:
             message = 'Ошибка при загрузке файла'
@@ -156,8 +157,13 @@ class Selectel:
 
         chat = message.get('chat')
 
-        state = self.core.states.get(chat['id'])
-        container = state['container']
+        state = self.core.states.get(chat['id']) or {}
+        container = state.get('container')
+
+        if not container:
+            self.telegram.send_message('Пожалуйста, выберите контейнер. \n'
+                                       'Список доступных контейнеров — /containers')
+            return
 
         files = self.sdk.get_files_list(container)
         buttons = []
@@ -176,7 +182,7 @@ class Selectel:
                 }]
                 buttons.append(row)
 
-        self.telegram.send_message(message, chat_id=chat['id'], reply_markup={'inline_keyboard': buttons})
+        print(self.telegram.send_message(message, chat_id=chat['id'], reply_markup={'inline_keyboard': buttons}))
 
     def create_container(self, message):
         text = message.get('text')
