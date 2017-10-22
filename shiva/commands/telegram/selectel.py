@@ -1,3 +1,7 @@
+import io
+import os
+
+
 class Selectel:
 
     def __init__(self, core):
@@ -67,21 +71,20 @@ class Selectel:
         self.core.states.push(chat['id'], {'type': 'container', 'container': container})
         self.get_files(message)
 
-
     def upload_file(self, message):
         document = message['document']
         chat = message['chat']
 
-        tmp_name = self.telegram.telegram_return_file(document['file_id'])
+        file = self.telegram.telegram_return_file(document['file_id'])
 
         state = self.core.states.get(chat['id'])
 
         container = state.get('container')
         name = document.get('file_name')
 
-        response = self.sdk.upload_file(container, name, open(tmp_name), document.get('mime_type'), document.get('file_size'))
+        code = self.sdk.upload_file(container, name, file, document.get('mime_type'), document.get('file_size'))
 
-        if response.status_code == 201:
+        if code == 201:
             message = 'Файл успешно загружен'
         else:
             message = 'Ошибка при загрузке файла'
@@ -115,11 +118,11 @@ class Selectel:
 
         cmd, container, file = data.split('|', 2)
 
-        content = self.sdk.download_file(container, file)
+        buffer = self.sdk.download_file(container, file)
 
-        response = self.telegram.send_document(content, chat['id'])
+        response = self.telegram.send_document(buffer.getvalue(), chat['id'])
 
-        if response.status_code == 413:
+        if hasattr(response, 'states_code') and response.status_code == 413:
             self.telegram.send_message('Файл слишком большой, воспользуйтесь ссылкой', chat_id=chat['id'])
 
     def delete_file(self, callback_query):
