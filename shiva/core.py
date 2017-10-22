@@ -55,5 +55,5 @@ class Core:
         self.telegram = Telegram()
 
     def load_plugins(self):
-        self.selectel = SelectelCloudStorage(self.db)
+        self.selectel = SelectelCloudStorage
         self.notifier = Notifier(self)

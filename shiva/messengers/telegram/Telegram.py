@@ -34,11 +34,12 @@ class API:
             data['reply_markup'] = json.dumps(data['reply_markup'])
 
         result = requests.post(botURL, data=data, files=files)
+        print(result.request.headers)
         response = result.content.decode("utf-8")
         try:
             return json.loads(response)
         except:
-            return response
+            return result
 
     def telegram_return_file(self, file_id):
 
@@ -46,19 +47,11 @@ class API:
         result = requests.get(getFileURL)
         result = result.json()
 
-        print(result)
-
         fileUrl = 'https://api.telegram.org/file/bot' + self.TOKEN + '/' + result['result']['file_path']
 
-        response = requests.get(fileUrl, stream=True)
+        response = requests.get(fileUrl)
 
-        name = str(uuid.uuid4()) + '.tmp'
-        handle = open(name, "xb")
-        for chunk in response.iter_content(chunk_size=512):
-            if chunk:  # filter out keep-alive new chunks
-                handle.write(chunk)
-
-        return name
+        return response.content
 
 
     def get_updates(self, data={'limit': 100}):

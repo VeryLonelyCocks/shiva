@@ -47,6 +47,9 @@ class TelegramCommands:
                 if command in self.main.commands:
                     self.commands[command](message)
 
+            if message.get('document'):
+                self.selectel.process_command('', message)
+
         if callback_query:
             data = callback_query.get('data')
             cmd, other_data = data.split('|', 1)
