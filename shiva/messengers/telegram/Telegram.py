@@ -12,7 +12,10 @@ class Telegram():
 
     def create_webhook(self, host):
         self.HOST = host
-        self.URI = '/%s' % uuid.uuid4().hex
+
+        # self.URI = '/%s' % uuid.uuid4().hex
+        self.URI = '/telegram'
+
         self.WEBHOOK = 'https://{}{}'.format(self.HOST, self.URI)
         return self.BOT.set_webhook(self.WEBHOOK)
 
@@ -27,15 +30,35 @@ class API:
 
     def telegram_action(self, action, data={}, files={}):
         botURL = 'https://api.telegram.org/bot' + self.TOKEN + '/' + action
+        if data.get('reply_markup'):
+            data['reply_markup'] = json.dumps(data['reply_markup'])
+
         result = requests.post(botURL, data=data, files=files)
         response = result.content.decode("utf-8")
-        return json.loads(response)
+        try:
+            return json.loads(response)
+        except:
+            return response
 
-    def telegram_return_file(self, file_path):
-        fileURL = 'https://api.telegram.org/file/bot' + self.TOKEN + '/' + file_path
-        result = requests.get(fileURL)
-        response = result.content
-        return response
+    def telegram_return_file(self, file_id):
+
+        getFileURL = 'https://api.telegram.org/bot' + self.TOKEN + '/getFile?file_id=' + file_id
+        result = requests.get(getFileURL)
+        result = result.json()
+
+        print(result)
+
+        fileUrl = 'https://api.telegram.org/file/bot' + self.TOKEN + '/' + result['result']['file_path']
+
+        response = requests.get(fileUrl, stream=True)
+
+        name = str(uuid.uuid4()) + '.tmp'
+        handle = open(name, "xb")
+        for chunk in response.iter_content(chunk_size=512):
+            if chunk:  # filter out keep-alive new chunks
+                handle.write(chunk)
+
+        return name
 
 
     def get_updates(self, data={'limit': 100}):
@@ -204,7 +227,6 @@ class API:
         )
 
         return self.telegram_action('sendDocument', data=data, files=files)
-
 
     def set_webhook(self, url):
         data = {

@@ -13,7 +13,7 @@ class States:
         states = list(self.collection.find())
 
         for state in states:
-            self.states[state['chat_id']] = state['data']
+            self.states[state['chat_id']] = [state['data']]
 
     def push(self, chat_id, data):
 
