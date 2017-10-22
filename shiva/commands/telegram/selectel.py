@@ -85,10 +85,7 @@ class Selectel:
 
         code = self.sdk.upload_file(container, name, file, document.get('mime_type'), document.get('file_size'))
 
-        if 199 < code < 300:
-            message = 'Файл успешно загружен'
-        else:
-            message = 'Ошибка при загрузке файла'
+        message = 'Файл загружен'
 
         self.telegram.send_message(message, chat['id'])
 
