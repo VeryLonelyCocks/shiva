@@ -3,6 +3,7 @@ import string
 
 from .sdk.sdk.cloudstorage import CloudStorage
 
+
 class SelectelCloudStorage:
 
     def __init__(self, db):
